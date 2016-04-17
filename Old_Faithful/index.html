@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>When Will Old Faithful Erupt Next?</title>
+  <meta charset="utf-8">
+  <meta name="description" content="When Will Old Faithful Erupt Next?">
+  <meta name="author" content="Christopher Marth">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>When Will Old Faithful Erupt Next?</h1>
+    <h2>Predicting Eruptions</h2>
+    <p>Christopher Marth<br/>Coursera Developing Data Products - Final Project</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Imagine the following situation...</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>You are visiting Yellowstone National Park and are standing in front of the legendary Old Faithful. It&#39;s late in the day and you are interested in making a dinner reservation at the Old Faithful Inn. The restaurant only has table openings 30 minutes and 90 minutes from now. You don&#39;t want to miss this golden opportunity to snap a photo in front of an erupting Old Faithful but you (and your kids) are very hungry. Will Old Faithful erupt within the next 30 minutes, allowing to satisfy your hunger as soon as possible while also snapping a priceless family vaction photo, or should you wait for the reservation 90 minutes from now to guarantee you get your photo?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Lucky for you... You have access to R !</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Using the built-in data set &quot;faithful&quot; we can predict when Old Faithful will erupt next given when it last erupted and how long the eruption lasted.</p>
+
+<pre><code class="r">data(faithful)
+colnames(faithful)
+</code></pre>
+
+<pre><code>## [1] &quot;eruptions&quot; &quot;waiting&quot;
+</code></pre>
+
+<p>The column &quot;eruptions&quot; represents the number of minutes a given eruption lasted. The column &quot;waiting&quot; represents the number of minutes the next eruption occured. With this data we will build a predictive model to solve our dilema.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Building the Predictive Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Given the Old Faithful eruption data we can build the following simple linear model to predict when the next eruption will occur within a certain confidence interval.</p>
+
+<pre><code class="r">model &lt;- lm(faithful$waiting ~ faithful$eruptions)
+sumCoeff &lt;- summary(model)$coefficients
+slope &lt;- sumCoeff[2,1] + c(-1,1)*qt(0.975,df=model$df) * sumCoeff[2,2]
+intercept &lt;- sumCoeff[1,1] + c(-1,1)*qt(0.975,df=model$df) * sumCoeff[1,2]
+</code></pre>
+
+<p>With this model we can now predict a range for when the next eruption will occur</p>
+
+<pre><code class="r">lastEruptDuration &lt;- 3
+lastEruptMinutesAgo &lt;- 30
+nextEruption &lt;- intercept + slope*lastEruptDuration - lastEruptMinutesAgo
+nextEruption
+</code></pre>
+
+<pre><code>## [1] 31.53057 39.79607
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Wrapping it in a Shiny App</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Since we don&#39;t want to type all of the computations every time we need our answer, we can wrap the above in an R shiny application </p>
+
+<div style='text-align: center;'>
+  <img src="assets/img/oldFaithful_shinyApp.jpg" height="370" width="800"/>
+</div>
+
+<p>All we now need to do is adjust the sliders for time of last eruption, eruption duration, and confidence level as appropriate to determine when the next eruption will occur. You can use the app yourself here: <a href="https://chrismarth.shinyapps.io/old_faithful/">https://chrismarth.shinyapps.io/old_faithful/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Imagine the following situation...'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Lucky for you... You have access to R !'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Building the Predictive Model'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Wrapping it in a Shiny App'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
